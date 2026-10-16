@@ -1,40 +1,38 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { useState } from 'react';
+import Menu from './screens/Menu';
+import HostIP from './screens/HostIP';
+import ClientIP from './screens/ClientIP';
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+type Screen = 'menu' | 'hostIP' | 'clientIP';
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
+export default function App() {
+  const [screen, setScreen] = useState<Screen>('menu');
 
-  return (
-    <main className="container">
-      <h1>ну типо жоский проект</h1>
+  const goMenu = () => setScreen('menu');
 
-      <p>движуха</p>
-
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="хто я"
+  switch (screen) {
+    case 'menu':
+      return (
+        <Menu
+          onHost={() => setScreen('hostIP')}
+          onClient={() => setScreen('clientIP')}
+          onExit={() => window.close()}
         />
-        <button type="submit">не нажимай, хз че это</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
-  );
-}
+      );
 
-export default App;
+    case 'hostIP':
+      return <HostIP onBack={goMenu} />;
+
+    case 'clientIP':
+      return <ClientIP onBack={goMenu} />;
+
+    default:
+      return (
+        <Menu
+          onHost={() => setScreen('hostIP')}
+          onClient={() => setScreen('clientIP')}
+          onExit={() => window.close()}
+        />
+      );
+  }
+}

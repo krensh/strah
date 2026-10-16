@@ -1,0 +1,151 @@
+/* ===== Панель хоста ===== */
+.host-panel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  padding: 40px 60px;
+  text-align: center;
+}
+
+/* ===== Заголовок «Ваш сервер» ===== */
+.host-title {
+  margin: 0;
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: clamp(36px, 5vw, 64px);
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #fff200;
+
+  text-shadow:
+    3px 3px 0 #d2012e,
+    0 0 20px rgba(255, 138, 0, 0.7);
+}
+
+/* ===== Крупный IP ===== */
+.ip-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 20px 36px;
+
+  background: rgba(0, 0, 0, 0.75);
+  border: 3px solid #ff00dd;
+  box-shadow:
+    6px 6px 0 #ff8a00,
+    6px 6px 0 2px #d2012e,
+    0 0 30px rgba(183, 0, 255, 0.5);
+}
+
+.ip-bracket {
+  font-family: 'Courier New', monospace;
+  font-size: 48px;
+  font-weight: bold;
+  color: #ff00dd;
+  text-shadow: 0 0 10px rgba(255, 0, 208, 0.9);
+  animation: bracketBlink 1.2s steps(2) infinite;
+}
+
+.ip-value {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: bold;
+  letter-spacing: 4px;
+
+  color: #ff00dd;
+  text-shadow:
+    0 0 10px rgba(255, 0, 187, 0.9),
+    0 0 24px rgba(136, 0, 255, 0.5);
+}
+
+@keyframes bracketBlink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
+}
+
+/* ===== Подсказка ===== */
+.host-hint {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  color: #fff;
+  text-shadow:
+    2px 2px 0 rgba(0, 0, 0, 0.6),
+    0 0 12px rgba(255, 200, 0, 0.6);
+}
+
+/* ===== Три мигающие точки — «ожидание» ===== */
+.host-status {
+  display: flex;
+  gap: 10px;
+}
+
+.host-status .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+
+  background: #ff00dd;
+  box-shadow: 0 0 10px rgba(174, 0, 255, 0.9);
+
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.host-status .dot:nth-child(2) { animation-delay: 0.2s; }
+.host-status .dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+/* ===== Кнопка «Назад» ===== */
+.host-back {
+  margin-top: 10px;
+  padding: 8px 20px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border-radius: 0;
+
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid #fff;
+
+  box-shadow:
+    4px 4px 0 #ff8a00,
+    4px 4px 0 2px #d2012e;
+
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+}
+
+.host-back:hover {
+  background: #ff8a00;
+  color: #fff200;
+  box-shadow:
+    4px 4px 0 #fff200,
+    4px 4px 0 2px #ed3911,
+    0 0 18px #ff8a00e6;
+}
+
+.host-back:active {
+  transform: translate(2px, 2px);
+  box-shadow:
+    2px 2px 0 #ff8a00,
+    2px 2px 0 2px #000;
+}

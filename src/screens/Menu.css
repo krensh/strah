@@ -1,0 +1,178 @@
+/* ===== Большая надпись ===== */
+.menu-title {
+  position: absolute;
+  top: 4vh;
+  left: 3vw;
+  margin: 0;
+  z-index: 2;
+
+  font-family: 'Impact', 'Arial Black', sans-serif;
+  font-size: clamp(60px, 12vw, 200px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  white-space: nowrap;
+
+  background: linear-gradient(180deg, #fff200 0%, #ff8a00 50%, #ff0066 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  text-shadow:
+    2px 2px 0 rgba(137, 5, 130, 0.324),
+    0 0 18px rgba(255, 213, 0, 0.477);
+
+  filter: drop-shadow(0 0 14px rgba(255, 120, 0, 0.7));
+  animation: titlePulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+  from { filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.5)); }
+  to   { filter: drop-shadow(0 0 24px rgba(255, 100, 0, 0.9)); }
+}
+
+/* ===== Кнопки — вертикально слева ===== */
+.menu-buttons {
+  position: absolute;
+  bottom: 22%;
+  left: 3vw;
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu-button {
+  width: 320px;
+  padding: 16px 32px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0;
+
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: 2px solid #fff;
+
+  box-shadow:
+    5px 5px 0 #ff8a00,
+    5px 5px 0 2px #d2012e;
+
+  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+}
+
+.menu-button:hover {
+  background: #ff8a00;
+  color: #fff200;
+  box-shadow:
+    5px 5px 0 #fff200,
+    5px 5px 0 2px #ed3911,
+    0 0 22px #ff8a00e6;
+}
+
+.menu-button:active {
+  transform: translate(3px, 3px);
+  box-shadow:
+    2px 2px 0 #ff8a00,
+    2px 2px 0 2px #000;
+}
+
+/* ===== CD с котиком — правый нижний ===== */
+.cd-player {
+  position: absolute;
+  right: -10vw;
+  bottom: -30vh;
+  z-index: 4;
+
+  width: clamp(260px, 50vw, 480px);
+  aspect-ratio: 1;
+  transform: rotate(-12deg);
+  transform-origin: center center;
+  pointer-events: none;
+}
+
+/* Диск */
+.cd-player .cd-disc {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.7));
+}
+
+/* Котик */
+.cd-player .cd-cat {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 78%;
+  transform: translate(-60%, -90%);
+  image-rendering: pixelated;
+  z-index: 2;
+}
+
+/* ===== Бегущая строка — готовая гифка ===== */
+.marquee-gif {
+  position: absolute;
+  left: 0;
+  right: 24vw;
+  bottom: 0;
+  z-index: 3;
+
+  height: auto;
+  max-height: 10vh;
+  width: 95%;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+
+.credit {
+  position: absolute;
+  /*left: 50%;*/
+  top: 0;
+
+  /* Над верхним краем CD, чуть левее центра */
+  transform: translate(20%, -240%) rotate(-8deg);
+
+  padding: 10px 22px;
+
+  font-family: 'Comic Sans MS', 'Tahoma', cursive;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.4;
+  text-align: center;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  color: #1a0033;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px 20px 20px 4px;
+
+  box-shadow:
+    4px 4px 0 rgba(255, 138, 0, 0.85),
+    4px 4px 0 2px rgba(210, 1, 46, 0.6);
+
+  pointer-events: none;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+  z-index: 3;
+}
+
+.credit::after {
+  content: '';
+  position: absolute;
+  left: 26px;
+  bottom: -14px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 16px solid rgba(255, 255, 255, 0.92);
+  transform: rotate(8deg);
+}
