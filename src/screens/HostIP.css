@@ -1,4 +1,4 @@
-/* ===== Панель хоста ===== */
+/* ===== ПАНЕЛЬ ХОСТА ===== */
 .host-panel {
   position: absolute;
   top: 50%;
@@ -9,61 +9,52 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px; /* Уменьшили отступы */
 
-  padding: 40px 60px;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 24px;
   text-align: center;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
 }
-
-/* ===== Заголовок «Ваш сервер» ===== */
+/* ===== ЗАГОЛОВОК ===== */
 .host-title {
+  position: relative;
   margin: 0;
-  font-family: 'Impact', 'Arial Black', sans-serif;
-  font-size: clamp(36px, 5vw, 64px);
+  font-size: clamp(20px, 3.5vw, 36px); /* Сделали одинаково с клиентом */
+  line-height: 1;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #fff200;
+  white-space: nowrap;
 
+  color: #7df9ff;
   text-shadow:
-    3px 3px 0 #d2012e,
-    0 0 20px rgba(255, 138, 0, 0.7);
+    0 0 6px #7df9ff,
+    0 0 16px rgba(125, 249, 255, 0.6),
+    4px 4px 0 #0b0b1a;
 }
 
-/* ===== Крупный IP ===== */
+/* ===== БЛОК С IP ===== */
 .ip-display {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 
-  padding: 20px 36px;
+  padding: 16px 28px; /* Уменьшили внутренние отступы */
+  background: rgba(10, 15, 35, 0.65);
 
-  background: rgba(0, 0, 0, 0.75);
-  border: 3px solid #ff00dd;
+  border: 1px solid rgba(125, 249, 255, 0.4);
   box-shadow:
-    6px 6px 0 #ff8a00,
-    6px 6px 0 2px #d2012e,
-    0 0 30px rgba(183, 0, 255, 0.5);
+    inset 0 0 24px rgba(125, 249, 255, 0.15),
+    0 0 0 1px #0b0b1a,
+    5px 5px 0 #0b0b1a;
 }
 
 .ip-bracket {
-  font-family: 'Courier New', monospace;
-  font-size: 48px;
-  font-weight: bold;
-  color: #ff00dd;
-  text-shadow: 0 0 10px rgba(255, 0, 208, 0.9);
-  animation: bracketBlink 1.2s steps(2) infinite;
-}
-
-.ip-value {
-  font-family: 'Courier New', monospace;
-  font-size: clamp(36px, 5vw, 56px);
-  font-weight: bold;
-  letter-spacing: 4px;
-
-  color: #ff00dd;
-  text-shadow:
-    0 0 10px rgba(255, 0, 187, 0.9),
-    0 0 24px rgba(136, 0, 255, 0.5);
+  font-size: clamp(20px, 3vw, 36px); /* Уменьшили скобки */
+  color: #ffd76e;
+  text-shadow: 0 0 10px rgba(255, 215, 110, 0.8);
+  animation: bracketBlink 1.5s steps(2) infinite;
 }
 
 @keyframes bracketBlink {
@@ -71,34 +62,38 @@
   50%      { opacity: 0.2; }
 }
 
-/* ===== Подсказка ===== */
-.host-hint {
-  margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-
-  color: #fff;
+.ip-value {
+  font-size: clamp(20px, 3.5vw, 36px); /* Уменьшили сам IP */
+  letter-spacing: 3px;
+  color: #7df9ff;
   text-shadow:
-    2px 2px 0 rgba(0, 0, 0, 0.6),
-    0 0 12px rgba(255, 200, 0, 0.6);
+    0 0 8px #7df9ff,
+    0 0 20px rgba(125, 249, 255, 0.7);
 }
 
-/* ===== Три мигающие точки — «ожидание» ===== */
+/* ===== ПОДСКАЗКА (в стиле меню) ===== */
+.host-hint {
+  margin: 0;
+  font-size: 12px; /* Тот же размер, что и в меню */
+  letter-spacing: 2px;
+  color: #ffd76e; /* Желтый цвет */
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(255, 215, 110, 0.6);
+}
+
+/* ===== ТРИ ТОЧКИ (ОЖИДАНИЕ) ===== */
 .host-status {
   display: flex;
   gap: 10px;
+  margin-top: 4px;
+  margin-bottom: 8px;
 }
 
 .host-status .dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-
-  background: #ff00dd;
-  box-shadow: 0 0 10px rgba(174, 0, 255, 0.9);
-
+  width: 10px; /* Чуть меньше */
+  height: 10px;
+  background: #7df9ff;
+  box-shadow: 0 0 10px #7df9ff;
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 
@@ -110,42 +105,36 @@
   50%      { opacity: 1;   transform: scale(1.15); }
 }
 
-/* ===== Кнопка «Назад» ===== */
-.host-back {
-  margin-top: 10px;
-  padding: 8px 20px;
+/* ===== МАЛЕНЬКАЯ КНОПКА НАЗАД ===== */
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 12px 24px;
+  margin-top: 4px;
 
   font-family: inherit;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 12px; /* Маленький размер */
+  letter-spacing: 1.5px;
   text-transform: uppercase;
-  letter-spacing: 2px;
   cursor: pointer;
-  border-radius: 0;
 
-  color: #fff;
-  background: rgba(0, 0, 0, 0.55);
-  border: 2px solid #fff;
+  color: rgba(234, 246, 255, 0.7);
+  background: rgba(10, 15, 35, 0.5);
 
-  box-shadow:
-    4px 4px 0 #ff8a00,
-    4px 4px 0 2px #d2012e;
+  border: 1px solid rgba(125, 249, 255, 0.2);
+  box-shadow: 2px 2px 0 #0b0b1a;
 
-  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+  transition: all 0.15s ease-out;
 }
 
-.host-back:hover {
-  background: #ff8a00;
-  color: #fff200;
-  box-shadow:
-    4px 4px 0 #fff200,
-    4px 4px 0 2px #ed3911,
-    0 0 18px #ff8a00e6;
+.back-button:hover {
+  color: #e9c224;
+  border-color: #7df9ff;
+  background: rgba(125, 249, 255, 0.1);
 }
 
-.host-back:active {
-  transform: translate(2px, 2px);
-  box-shadow:
-    2px 2px 0 #ff8a00,
-    2px 2px 0 2px #000;
+.back-button .btn-icon {
+  font-size: 14px;
 }

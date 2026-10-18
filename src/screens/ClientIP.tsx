@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './ClientIP.css';
-import SkyBackground from '../components/SkyBackground';
+import bg from '../assets/bg/bg.png';
 
 type ClientIPProps = {
   onBack: () => void;
@@ -16,7 +16,6 @@ export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
 
     setStatus('connecting');
 
-    // Заглушка. Позже здесь будет реальное WebSocket-подключение.
     setTimeout(() => {
       if (ip === '192.168.0.1' || ip.startsWith('192.168.') || ip === '127.0.0.1') {
         setStatus('ok');
@@ -33,21 +32,24 @@ export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
   };
 
   const statusText = {
-    idle:       'Введите IP сервера',
-    connecting: 'Подключение...',
-    error:      'Не удалось подключиться',
-    ok:         'Подключено!',
+    idle:       '// введите IP сервера',
+    connecting: '// подключение...',
+    error:      '// не удалось подключиться',
+    ok:         '// подключено!',
   }[status];
 
   return (
-    <div className="screen">
-
-      <SkyBackground />
-
+    <div
+      className="screen"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="client-panel">
         <h1 className="client-title">Подключение</h1>
-
-        <p className="client-label">Введите IP сервера напарника</p>
 
         <input
           className="ip-input"
@@ -66,18 +68,21 @@ export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
         </p>
 
         <button
-          className="client-button"
+          className="connect-button"
           onClick={handleConnect}
           disabled={status === 'connecting' || status === 'ok' || !ip.trim()}
         >
-          {status === 'connecting' ? 'Соединение...' : 'Подключиться'}
+          <span className="btn-icon">▸</span>
+          <span className="btn-text">
+            {status === 'connecting' ? 'Соединение...' : 'Подключиться'}
+          </span>
         </button>
 
-        <button className="client-back" onClick={onBack}>
-          ← Назад
+        <button className="back-button" onClick={onBack}>
+          <span className="btn-icon">←</span>
+          <span className="btn-text">Назад</span>
         </button>
       </div>
-
     </div>
   );
 }

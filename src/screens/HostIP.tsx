@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './HostIP.css';
-import SkyBackground from '../components/SkyBackground';
+import bg from '../assets/bg/bg.png';
 
 type HostIPProps = {
   onBack: () => void;
@@ -9,16 +9,20 @@ type HostIPProps = {
 export default function HostIP({ onBack }: HostIPProps) {
   const [ip, setIp] = useState('192.168.0.1');
 
-  // Позже заменим на invoke('get_local_ip') из Rust
   useEffect(() => {
     setIp('192.168.0.1');
   }, []);
 
   return (
-    <div className="screen">
-
-      <SkyBackground />
-
+    <div
+      className="screen"
+      style={{
+        backgroundImage: `url(${bg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
       <div className="host-panel">
         <h1 className="host-title">Ваш сервер</h1>
 
@@ -28,9 +32,7 @@ export default function HostIP({ onBack }: HostIPProps) {
           <span className="ip-bracket">]</span>
         </div>
 
-        <p className="host-hint">
-          Передайте сервер напарнику
-        </p>
+        <p className="host-hint">// передайте сервер напарнику</p>
 
         <div className="host-status">
           <span className="dot" />
@@ -38,11 +40,11 @@ export default function HostIP({ onBack }: HostIPProps) {
           <span className="dot" />
         </div>
 
-        <button className="host-back" onClick={onBack}>
-          ← Назад
+        <button className="back-button" onClick={onBack}>
+          <span className="btn-icon">←</span>
+          <span className="btn-text">Назад</span>
         </button>
       </div>
-
     </div>
   );
 }

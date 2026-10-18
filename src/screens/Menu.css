@@ -1,178 +1,237 @@
-/* ===== Большая надпись ===== */
-.menu-title {
-  position: absolute;
-  top: 4vh;
-  left: 3vw;
+/* ===== ЭКРАН ===== */
+.screen {
+  width: 100%;
+  height: 100vh;
   margin: 0;
-  z-index: 2;
+  position: relative;
+  overflow: hidden;
 
-  font-family: 'Impact', 'Arial Black', sans-serif;
-  font-size: clamp(60px, 12vw, 200px);
-  line-height: 1;
-  text-transform: uppercase;
-  letter-spacing: -1px;
-  white-space: nowrap;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0a0a15;
 
-  background: linear-gradient(180deg, #fff200 0%, #ff8a00 50%, #ff0066 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-
-  text-shadow:
-    2px 2px 0 rgba(137, 5, 130, 0.324),
-    0 0 18px rgba(255, 213, 0, 0.477);
-
-  filter: drop-shadow(0 0 14px rgba(255, 120, 0, 0.7));
-  animation: titlePulse 2.5s ease-in-out infinite alternate;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  color: #eaf6ff;
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@keyframes titlePulse {
-  from { filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.5)); }
-  to   { filter: drop-shadow(0 0 24px rgba(255, 100, 0, 0.9)); }
-}
 
-/* ===== Кнопки — вертикально слева ===== */
-.menu-buttons {
+
+/* Сканлайны поверх */
+.screen::after {
+  content: '';
   position: absolute;
-  bottom: 22%;
-  left: 3vw;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.10) 0px,
+    rgba(0, 0, 0, 0.10) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* ===== ПОСТЕР ===== */
+.menu-poster {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%);
   z-index: 3;
 
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  align-items: center;
+
+  gap: 40px;
+
+  width: 100%;
+  max-width: 720px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+/* ===== ЗАГОЛОВОК ===== */
+.menu-title {
+  position: relative;
+  margin: 0;
+  font-size: clamp(36px, 8vw, 110px);
+  line-height: 1;
+  letter-spacing: -2px;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  color: #7df9ff;
+  text-shadow:
+    0 0 6px #7df9ff,
+    0 0 16px rgba(125, 249, 255, 0.6),
+    5px 5px 0 #0b0b1a;
+
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.menu-title::before {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  color: transparent;
+  -webkit-text-stroke: 2px #0b0b1a;
+}
+
+@keyframes titleGlow {
+  from { text-shadow: 0 0 6px #7df9ff, 0 0 16px rgba(125, 249, 255, 0.6), 5px 5px 0 #0b0b1a; }
+  to   { text-shadow: 0 0 12px #7df9ff, 0 0 28px rgba(125, 249, 255, 0.9), 5px 5px 0 #0b0b1a; }
+}
+
+/* ===== ПОДЗАГОЛОВОК ===== */
+.menu-subtitle {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #ffd76e;
+  opacity: 0.9;
+  text-shadow: 0 0 8px rgba(255, 215, 110, 0.6);
+}
+
+/* ===== БЛОК КНОПОК ===== */
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
 }
 
 .menu-button {
-  width: 320px;
-  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+
+  width: 100%;
+  padding: 18px 24px;
+
   font-family: inherit;
-  font-size: 18px;
-  font-weight: bold;
-  text-transform: uppercase;
+  font-size: 16px;
   letter-spacing: 2px;
+  text-transform: uppercase;
   text-align: left;
   cursor: pointer;
-  border-radius: 0;
 
-  color: #fff;
-  background: rgba(0, 0, 0, 0.55);
-  border: 2px solid #fff;
+  color: #7df9ff;
+  background: rgba(10, 15, 35, 0.55);
 
+  border: 1px solid rgba(125, 249, 255, 0.4);
   box-shadow:
-    5px 5px 0 #ff8a00,
-    5px 5px 0 2px #d2012e;
+    inset 0 0 12px rgba(125, 249, 255, 0.12),
+    0 0 0 1px #0b0b1a,
+    4px 4px 0 #0b0b1a;
 
-  transition: transform 0.1s, box-shadow 0.1s, background 0.15s;
+  transition:
+    transform 0.08s ease-out,
+    box-shadow 0.15s ease-out,
+    background 0.15s ease-out,
+    color 0.15s ease-out;
 }
 
+.btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-button .btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  color: #ffd76e;
+  transition: color 0.15s ease-out;
+}
+
+/* Наведение */
 .menu-button:hover {
-  background: #ff8a00;
-  color: #fff200;
+  background: rgba(125, 249, 255, 0.12);
+  color: #e9c224;
+  border-color: #7df9ff;
   box-shadow:
-    5px 5px 0 #fff200,
-    5px 5px 0 2px #ed3911,
-    0 0 22px #ff8a00e6;
+    inset 0 0 18px rgba(125, 249, 255, 0.25),
+    0 0 0 1px #0b0b1a,
+    4px 4px 0 #0b0b1a,
+    0 0 24px rgba(125, 249, 255, 0.45);
+}
+
+.menu-button:hover .btn-icon {
+  color: #7df9ff;
 }
 
 .menu-button:active {
-  transform: translate(3px, 3px);
+  transform: translate(4px, 4px);
   box-shadow:
-    2px 2px 0 #ff8a00,
-    2px 2px 0 2px #000;
+    inset 0 0 18px rgba(125, 249, 255, 0.3),
+    0 0 0 1px #0b0b1a;
 }
 
-/* ===== CD с котиком — правый нижний ===== */
-.cd-player {
-  position: absolute;
-  right: -10vw;
-  bottom: -30vh;
-  z-index: 4;
-
-  width: clamp(260px, 50vw, 480px);
-  aspect-ratio: 1;
-  transform: rotate(-12deg);
-  transform-origin: center center;
-  pointer-events: none;
+/* Выход */
+.menu-button-exit {
+  color: rgba(234, 246, 255, 0.55);
+  border-color: rgba(255, 87, 119, 0.3);
 }
 
-/* Диск */
-.cd-player .cd-disc {
-  position: absolute;
-  inset: 0;
+.menu-button-exit .btn-icon {
+  color: #ff5577;
+}
+
+.menu-button-exit:hover {
+  background: rgba(255, 87, 119, 0.12);
+  color: #e63232;
+  border-color: #ff5577;
+  box-shadow:
+    inset 0 0 18px rgba(255, 87, 119, 0.2),
+    0 0 0 1px #0b0b1a,
+    4px 4px 0 #0b0b1a,
+    0 0 24px rgba(255, 87, 119, 0.35);
+}
+
+/* ===== ФУТЕР ===== */
+.menu-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 0 22px rgba(255, 255, 255, 0.7));
+  max-width: 420px; /* Ширина 1-в-1 как у блока кнопок */
+  margin-top: 8px;
+
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: #7a8a9a;
 }
 
-/* Котик */
-.cd-player .cd-cat {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 78%;
-  transform: translate(-60%, -90%);
-  image-rendering: pixelated;
-  z-index: 2;
+.footer-author {
+  text-align: left;
 }
 
-/* ===== Бегущая строка — готовая гифка ===== */
-.marquee-gif {
-  position: absolute;
-  left: 0;
-  right: 24vw;
-  bottom: 0;
-  z-index: 3;
-
-  height: auto;
-  max-height: 10vh;
-  width: 95%;
-  image-rendering: pixelated;
-  pointer-events: none;
+.footer-online {
+  text-align: right;
 }
 
-
-.credit {
-  position: absolute;
-  /*left: 50%;*/
-  top: 0;
-
-  /* Над верхним краем CD, чуть левее центра */
-  transform: translate(20%, -240%) rotate(-8deg);
-
-  padding: 10px 22px;
-
-  font-family: 'Comic Sans MS', 'Tahoma', cursive;
-  font-size: 14px;
-  font-weight: bold;
-  line-height: 1.4;
-  text-align: center;
-  letter-spacing: 0.5px;
-  white-space: nowrap;
-
-  color: #1a0033;
-  background: rgba(255, 255, 255, 0.92);
-  border-radius: 20px 20px 20px 4px;
-
-  box-shadow:
-    4px 4px 0 rgba(255, 138, 0, 0.85),
-    4px 4px 0 2px rgba(210, 1, 46, 0.6);
-
-  pointer-events: none;
-  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
-  z-index: 3;
+.menu-footer .blink {
+  color: #7df9ff;
+  animation: blinkText 1.2s steps(2) infinite;
 }
 
-.credit::after {
-  content: '';
-  position: absolute;
-  left: 26px;
-  bottom: -14px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 14px solid transparent;
-  border-top: 16px solid rgba(255, 255, 255, 0.92);
-  transform: rotate(8deg);
+@keyframes blinkText {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.2; }
 }
