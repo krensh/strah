@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import './ClientIP.css';
 import bg from '../assets/bg/bg.png';
 
@@ -7,36 +9,61 @@ type ClientIPProps = {
   onConnect?: () => void;
 };
 
+type HostFound = { ip: string; port: number };
+type Status = 'idle' | 'searching' | 'connecting' | 'error' | 'ok';
+
 export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
-  const [ip, setIp] = useState('');
-  const [status, setStatus] = useState<'idle' | 'connecting' | 'error' | 'ok'>('idle');
+  const [status, setStatus] = useState<Status>('idle');
+  const [errorText, setErrorText] = useState('');
 
-  const handleConnect = () => {
-    if (!ip.trim()) return;
+  // чтобы не переподписываться на события при каждом рендере App
+  const onConnectRef = useRef(onConnect);
+  useEffect(() => { onConnectRef.current = onConnect; }, [onConnect]);
 
-    setStatus('connecting');
-
-    setTimeout(() => {
-      if (ip === '192.168.0.1' || ip.startsWith('192.168.') || ip === '127.0.0.1') {
-        setStatus('ok');
-        onConnect?.();
-      } else {
+  useEffect(() => {
+    const unlisteners = [
+      listen<HostFound>('host_found', async (e) => {
+        const { ip, port } = e.payload;
+        setStatus('connecting');
+        try {
+          await invoke('connect_to_host', { ip, port });
+          setStatus('ok');
+          onConnectRef.current?.();
+        } catch (err) {
+          setErrorText(String(err));
+          setStatus('error');
+        }
+      }),
+      listen('host_search_timeout', () => {
+        setErrorText('хост не найден');
         setStatus('error');
-      }
-    }, 1200);
-  };
+      }),
+    ];
+    return () => { unlisteners.forEach((p) => p.then((un) => un())); };
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIp(e.target.value);
-    if (status === 'error') setStatus('idle');
+  const handleSearch = async () => {
+    setErrorText('');
+    setStatus('searching');
+    try {
+      await invoke('discover_host');
+    } catch (err) {
+      setErrorText(String(err));
+      setStatus('error');
+    }
   };
 
   const statusText = {
-    idle:       '// введите IP сервера',
+    idle:       '// нажмите, чтобы найти хоста в сети',
+    searching:  '// поиск хоста...',
     connecting: '// подключение...',
-    error:      '// не удалось подключиться',
+    error:      `// ${errorText || 'не удалось подключиться'}`,
     ok:         '// подключено!',
   }[status];
+
+  // для CSS: поиск выглядит как подключение (классы status-* уже есть)
+  const cssStatus = status === 'searching' ? 'connecting' : status;
+  const busy = status === 'searching' || status === 'connecting' || status === 'ok';
 
   return (
     <div
@@ -51,30 +78,19 @@ export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
       <div className="client-panel">
         <h1 className="client-title">Подключение</h1>
 
-        <input
-          className="ip-input"
-          type="text"
-          value={ip}
-          onChange={handleChange}
-          onKeyDown={(e) => e.key === 'Enter' && handleConnect()}
-          placeholder="192.168.0.1"
-          spellCheck={false}
-          autoFocus
-          disabled={status === 'connecting' || status === 'ok'}
-        />
-
-        <p className={`client-status status-${status}`}>
+        <p className={`client-status status-${cssStatus}`}>
           {statusText}
         </p>
 
         <button
           className="connect-button"
-          onClick={handleConnect}
-          disabled={status === 'connecting' || status === 'ok' || !ip.trim()}
+          onClick={handleSearch}
+          disabled={busy}
         >
           <span className="btn-icon">▸</span>
           <span className="btn-text">
-            {status === 'connecting' ? 'Соединение...' : 'Подключиться'}
+            {status === 'searching' ? 'Поиск...' :
+             status === 'connecting' ? 'Соединение...' : 'Найти хоста'}
           </span>
         </button>
 

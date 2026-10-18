@@ -28,8 +28,7 @@ export default function App() {
       );
 
     case 'hostIP':
-      // (В будущем сюда добавим onGameStart для хоста)
-      return <HostIP onBack={goMenu} />;
+      return <HostIP onBack={goMenu} onGameStart={startGame} />;
 
     case 'clientIP':
       return (
