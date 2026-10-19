@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import './Game.css';
 import bg from '../assets/bg/bg.png';
 
@@ -30,6 +32,9 @@ export default function Game({ onGameOver }: GameProps) {
 
   const holdInterval = useRef<number | null>(null);
 
+  const onGameOverRef = useRef(onGameOver);
+  useEffect(() => { onGameOverRef.current = onGameOver; }, [onGameOver]);
+
   // ЕДИНЫЙ ИГРОВОЙ ЦИКЛ (раз в секунду)
   useEffect(() => {
     const tick = setInterval(() => {
@@ -40,32 +45,29 @@ export default function Game({ onGameOver }: GameProps) {
         let newEnemyItems = [...prev.enemyItems];
 
         // 1. Разрядка марионетки (если не зажата)
-        let newMarionette = prev.isHolding ? prev.marionette : Math.max(0, prev.marionette - 1);
-        let newIsBlocked = newMarionette === 0;
+        const newMarionette = prev.isHolding ? prev.marionette : Math.max(0, prev.marionette - 1);
+        const newIsBlocked = newMarionette === 0;
 
-        // 2. Обработка МОИХ предметов
+        // 2. Мои предметы
         newMyItems = newMyItems.map(item => {
           let t = item.timeLeft - 1;
 
           if (item.type === 'bomb' && t <= 0) {
-            // Взрыв бомбы у меня
             newMyHp -= 30;
             setIsShaking(true);
             setShowExplosion(true);
             setTimeout(() => { setIsShaking(false); setShowExplosion(false); }, 800);
-            return null; // Удаляем
+            return null;
           }
 
-          if (item.type === 'potato') {
-            if (t <= 0) {
-              newMyHp -= 1; // Картошка кусает каждые 2 сек
-              t = 2;
-            }
+          if (item.type === 'potato' && t <= 0) {
+            newMyHp -= 1;
+            t = 2;
           }
           return { ...item, timeLeft: t };
         }).filter(Boolean) as GameItem[];
 
-        // 3. Обработка ПРЕДМЕТОВ ВРАГА (для симуляции, что он тоже играет)
+        // 3. Предметы врага (визуальная симуляция того, что у него происходит)
         newEnemyItems = newEnemyItems.map(item => {
           let t = item.timeLeft - 1;
 
@@ -75,33 +77,25 @@ export default function Game({ onGameOver }: GameProps) {
             setTimeout(() => setEnemyExplosion(false), 800);
             return null;
           }
-          if (item.type === 'potato') {
-            if (t <= 0) {
-               newEnemyHp -= 1;
-               t = 2;
-            }
+          if (item.type === 'potato' && t <= 0) {
+            newEnemyHp -= 1;
+            t = 2;
           }
           return { ...item, timeLeft: t };
         }).filter(Boolean) as GameItem[];
 
         // 4. Спавн новых предметов (шанс 30%)
         if (newMyItems.length < 7 && Math.random() < 0.3) {
-          const type = Math.random() > 0.4 ? 'potato' : 'bomb';
+          const type: ItemType = Math.random() > 0.4 ? 'potato' : 'bomb';
           newMyItems.push({
             id: Math.random().toString(),
             type,
             x_pos: Math.random() * 80 + 10,
-            timeLeft: type === 'bomb' ? 10 : 2
+            timeLeft: type === 'bomb' ? 10 : 2,
           });
         }
 
-        // Демо: враг иногда кидает нам (шанс 20%)
-        if (newEnemyItems.length > 0 && Math.random() < 0.2 && newMyItems.length < 7) {
-          const passed = newEnemyItems.pop();
-          if (passed) newMyItems.push({ ...passed, x_pos: Math.random() * 80 + 10 });
-        }
-
-        // 5. Проверка на смерть и сброс раунда
+        // 5. Смерть и сброс раунда
         if (newMyHp <= 0) {
           return { ...prev, myHp: 100, enemyHp: 100, enemyScore: prev.enemyScore + 1, myItems: [], enemyItems: [], marionette: 15 };
         }
@@ -119,30 +113,60 @@ export default function Game({ onGameOver }: GameProps) {
           isBlocked: newIsBlocked,
         };
       });
-    }, 1000); // 1 тик = 1 секунда
+    }, 1000);
 
     return () => clearInterval(tick);
-  }, []); // Пустой массив — цикл создается 1 раз и не пересоздается
+  }, []);
+
+  // СЕТЬ: получение предметов и отключение соперника
+  useEffect(() => {
+    const unItem = listen<string>('item_received', (e) => {
+      const type = e.payload as ItemType;
+      if (type !== 'potato' && type !== 'bomb') return;
+      setState(prev =>
+        prev.myItems.length >= 7
+          ? prev
+          : {
+              ...prev,
+              myItems: [
+                ...prev.myItems,
+                {
+                  id: Math.random().toString(),
+                  type,
+                  x_pos: Math.random() * 80 + 10,
+                  timeLeft: type === 'bomb' ? 10 : 2,
+                },
+              ],
+            }
+      );
+    });
+
+    const unDisc = listen('peer_disconnected', () => {
+      onGameOverRef.current();
+    });
+
+    return () => {
+      unItem.then(f => f());
+      unDisc.then(f => f());
+    };
+  }, []);
 
   // ДЕЙСТВИЯ
   const passItem = (id: string) => {
-    if (state.isBlocked) return; // Если марионетка на 0 — нельзя
+    if (state.isBlocked) return;
+    const item = state.myItems.find(i => i.id === id);
+    if (!item) return;
 
-    setState(prev => {
-      const itemToPass = prev.myItems.find(i => i.id === id);
-      if (!itemToPass) return prev;
+    invoke('send_item', { kind: item.type }).catch(console.error);
 
-      const newMyItems = prev.myItems.filter(i => i.id !== id);
-      // Если у врага есть место, кидаем ему
-      if (prev.enemyItems.length < 7) {
-        return {
-          ...prev,
-          myItems: newMyItems,
-          enemyItems: [...prev.enemyItems, { ...itemToPass, timeLeft: itemToPass.type === 'bomb' ? 10 : 2 }]
-        };
-      }
-      return { ...prev, myItems: newMyItems }; // Если нет места, предмет сгорает
-    });
+    setState(prev => ({
+      ...prev,
+      myItems: prev.myItems.filter(i => i.id !== id),
+      enemyItems:
+        prev.enemyItems.length < 7
+          ? [...prev.enemyItems, { ...item, timeLeft: item.type === 'bomb' ? 10 : 2 }]
+          : prev.enemyItems,
+    }));
   };
 
   const startHold = () => {
