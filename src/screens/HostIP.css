@@ -138,3 +138,7 @@
 .back-button .btn-icon {
   font-size: 14px;
 }
+.host-status .dot.green {
+  background: #00ff88;
+  box-shadow: 0 0 10px #00ff88;
+}

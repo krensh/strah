@@ -2,45 +2,51 @@ import { useState } from 'react';
 import Menu from './screens/Menu';
 import HostIP from './screens/HostIP';
 import ClientIP from './screens/ClientIP';
-import Game from './screens/Game'; // <-- 1. Импортируем игру
+import Game from './screens/Game';
 
-type Screen = 'menu' | 'hostIP' | 'clientIP' | 'game'; // <-- 2. Добавляем 'game'
+type Screen = 'menu' | 'hostIP' | 'clientIP' | 'game';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('menu');
 
+  // 1. Добавили состояние: true = Хост, false = Клиент
+  const [isHostPlayer, setIsHostPlayer] = useState(false);
+
   const goMenu = () => setScreen('menu');
-
-  // Функция для перехода в игру (пока просто заглушка)
   const startGame = () => setScreen('game');
-
-  // Функция для конца игры
-  const gameOver = () => setScreen('menu');
 
   switch (screen) {
     case 'menu':
       return (
         <Menu
-          onHost={() => setScreen('hostIP')}
-          onClient={() => setScreen('clientIP')}
+          // 2. При клике на "Создать игру" ставим true и идем на экран Хоста
+          onHost={() => {
+            setIsHostPlayer(true);
+            setScreen('hostIP');
+          }}
+          // 3. При клике на "Подключиться" ставим false и идем на экран Клиента
+          onClient={() => {
+            setIsHostPlayer(false);
+            setScreen('clientIP');
+          }}
           onExit={() => window.close()}
         />
       );
 
     case 'hostIP':
-      // (В будущем сюда добавим onGameStart для хоста)
-      return <HostIP onBack={goMenu} />;
+      return <HostIP onBack={goMenu} onStartGame={startGame} />;
 
     case 'clientIP':
       return (
         <ClientIP
           onBack={goMenu}
-          onConnect={startGame} // <-- 3. Передаем коллбэк в клиент
+          onConnect={startGame}
         />
       );
 
-    case 'game': // <-- 4. Новый экран
-      return <Game onGameOver={goMenu} />;
+    case 'game':
+      // Передаем isHostPlayer в игру, чтобы она знала, кто ты
+      return <Game onGameOver={goMenu} isHost={isHostPlayer} />;
 
     default:
       return <Menu onHost={() => setScreen('hostIP')} onClient={() => setScreen('clientIP')} onExit={() => window.close()} />;

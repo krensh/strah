@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
 import './ClientIP.css';
 import bg from '../assets/bg/bg.png';
 
@@ -10,31 +11,45 @@ type ClientIPProps = {
 export default function ClientIP({ onBack, onConnect }: ClientIPProps) {
   const [ip, setIp] = useState('');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'error' | 'ok'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (!ip.trim()) return;
 
     setStatus('connecting');
+    setErrorMessage('');
 
-    setTimeout(() => {
-      if (ip === '192.168.0.1' || ip.startsWith('192.168.') || ip === '127.0.0.1') {
-        setStatus('ok');
+    try {
+      // Вызываем Rust-команду для подключения
+      await invoke('connect_to_host', { ip: ip.trim(), port: 8080 });
+
+      setStatus('ok');
+
+      // Небольшая задержка, чтобы игрок увидел "Подключено!", затем переход
+      setTimeout(() => {
         onConnect?.();
-      } else {
-        setStatus('error');
-      }
-    }, 1200);
+      }, 1000);
+
+    } catch (err: any) {
+      console.error(err);
+      setStatus('error');
+      // В Rust ошибка возвращается как строка
+      setErrorMessage(err.toString() || 'Ошибка подключения');
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIp(e.target.value);
-    if (status === 'error') setStatus('idle');
+    if (status === 'error') {
+      setStatus('idle');
+      setErrorMessage('');
+    }
   };
 
   const statusText = {
     idle:       '// введите IP сервера',
     connecting: '// подключение...',
-    error:      '// не удалось подключиться',
+    error:      `// ${errorMessage || 'не удалось подключиться'}`,
     ok:         '// подключено!',
   }[status];
 
