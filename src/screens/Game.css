@@ -1,0 +1,231 @@
+/* ===== ОСНОВА ===== */
+.game-container {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Распределяет элементы по вертикали */
+  align-items: center;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  overflow: hidden;
+  pointer-events: none;
+  padding: 6vh 0 8vh 0; /* Отступы сверху и снизу */
+}
+
+/* Тряска экрана */
+.shake {
+  animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes shakeAnim {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+  40%, 60% { transform: translate3d(8px, 0, 0); }
+}
+
+/* ===== ЛЕВАЯ ПАНЕЛЬ (Марионетка) ===== */
+.left-panel {
+  position: absolute;
+  left: 4vw;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.marionette-btn {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  padding: 20px 10px;
+  font-family: inherit;
+  font-size: 14px;
+  background: rgba(10, 15, 35, 0.7);
+  border: 2px solid #ffd76e;
+  color: #ffd76e;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.1s;
+}
+
+.marionette-btn:active {
+  background: rgba(255, 215, 110, 0.2);
+}
+
+.marionette-btn.blocked {
+  border-color: #ff5577;
+  color: #ff5577;
+  animation: blinkAlert 0.5s infinite alternate;
+}
+
+.marionette-bar {
+  width: 20px;
+  height: 150px;
+  background: rgba(10, 15, 35, 0.7);
+  border: 2px solid #7df9ff;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.marionette-fill {
+  width: 100%;
+  background: #7df9ff;
+  box-shadow: 0 0 10px #7df9ff;
+  transition: height 0.2s;
+}
+
+/* ===== СЧЕТ СПРАВА ===== */
+.score-board {
+  position: absolute;
+  right: 4vw;
+  top: 10vh;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-size: 16px;
+  text-shadow: 2px 2px 0 #000;
+  pointer-events: auto;
+}
+.score-enemy { color: #ff5577; }
+.score-player { color: #38b6ff; }
+
+/* ===== СОПЕРНИК ===== */
+.enemy-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+.enemy-hp-bar {
+  width: 160px;
+  height: 10px;
+  background: rgba(10, 15, 35, 0.7);
+  border: 1px solid #ff5577;
+}
+.enemy-hp-fill {
+  height: 100%;
+  background: #ff5577;
+  transition: width 0.3s;
+}
+.enemy-avatar-container {
+  position: relative;
+}
+.enemy-avatar {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+.small-explosion {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+}
+
+/* ===== ЗОНА МОИХ ПРЕДМЕТОВ (исправлено) ===== */
+.my-items-area {
+  flex: 1; /* Занимает всё свободное место по центру */
+  position: relative;
+  width: 100%;
+  pointer-events: none; /* Чтобы прозрачная зона не мешала кликам */
+}
+
+
+.item-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(0,0,0,0.8));
+}
+.item-timer {
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffd76e; /* Желтый, чтобы выделялся */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px; /* Отодвигаем от картинки вверх */
+  border: 2px solid #ffd76e;
+  z-index: 10;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* Отредактируй .falling-item, чтобы таймер стоял сверху */
+.falling-item {
+  position: absolute;
+  bottom: 0;
+  pointer-events: auto;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column; /* Таймер сверху, картинка снизу */
+  align-items: center;
+  transform: translateX(-50%);
+  transition: transform 0.1s;
+  animation: dropIn 0.5s ease-out;
+}
+.falling-item:active {
+  transform: translateX(-50%) scale(0.9);
+}
+
+@keyframes dropIn {
+  0% { transform: translate(-50%, -50px); opacity: 0; }
+  100% { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* ===== НАШ HP ===== */
+.my-hp-bar {
+  position: relative; /* Теперь в потоке, благодаря flex */
+  width: 80%;
+  max-width: 900px;
+  height: 24px;
+  background: rgba(10, 15, 35, 0.7);
+  border: 2px solid #38b6ff;
+  box-shadow: 0 0 15px rgba(56, 182, 255, 0.3);
+  pointer-events: auto;
+  z-index: 5;
+}
+.my-hp-fill {
+  height: 100%;
+  background: #38b6ff;
+  transition: width 0.3s;
+}
+.hp-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 2;
+}
+
+/* ===== ЭКРАН ВЗРЫВА ===== */
+.fullscreen-explosion {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 0, 0, 0.2);
+}
+.fullscreen-explosion img {
+  width: 80%;
+  object-fit: contain;
+  animation: flash 0.3s ease-out;
+}
+
+@keyframes blinkAlert {
+  0% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+@keyframes flash {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
